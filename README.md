@@ -9,9 +9,11 @@ Vous avez besoin d'avoir installé npm, node et git sur votre machine pour ce pr
 Faire les commandes ci-dessous pour lancer le projet :
 
 git clone git@devops.telecomste.fr:borget.flavien/projetnodejs-dubois-borget.git
+
 cd projetnodejs-dubois-borget/
 
 npm install
+
 node index.js
 
 Aller sur votre moteur de recherche et écrivez : http://localhost:3000

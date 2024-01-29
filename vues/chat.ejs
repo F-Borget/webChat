@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html>
+  <!--page html de la page du chat-->
+  <head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Travaille Flavien & Romuald</title>
+    <style>
+      body { margin: 0; padding-bottom: 3rem; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;}
+
+      #form { background: rgba(0, 0, 0, 0.15); padding: 0.25rem; position: fixed; bottom: 0; left: 0; right: 0; display: flex; height: 3rem; box-sizing: border-box; backdrop-filter: blur(10px); }
+      #input { border: none; padding: 0 1rem; flex-grow: 1; border-radius: 2rem; margin: 0.25rem; }
+      #input:focus { outline: none; }
+      #form > button { background: #333; border: none; padding: 0 1rem; margin: 0.25rem; border-radius: 3px; outline: none; color: #fff; }
+
+      * {
+        margin: 0; 
+        padding: 0; 
+        font-family: Arial; 
+      }
+      .pp{
+        width: 30px; 
+        object-fit: cover;
+        object-position: center;
+        border-radius: 15px; 
+        margin-left: 8px; 
+        vertical-align: middle; 
+      }
+
+
+      .messageIn{
+        display: flex; 
+        flex-direction: row; 
+        align-items: end; 
+        margin-top: 10px; 
+      }
+
+      .imageContainer{
+        padding-right: 10px;
+        padding-bottom: 5px;
+      }
+
+      .pseudoContainer{
+        padding-left: 15px;
+        font-size: 11px;
+        color: #616771; 
+      }
+
+      .msgContainer{
+        background-color: #E9EBEE;
+        color: black; 
+        margin-top: 6px;
+        padding: 10px; 
+        border-radius: 20px; 
+      }
+
+    .imageContainerOut{
+      padding-right: 10px;
+      padding-bottom: 5px;
+    }
+
+    .messageOut{
+      display: flex;
+      flex-direction: row-reverse; 
+      align-items: end; 
+      justify-content: end; 
+      margin-top: 10px; 
+    }
+
+    .pseudoContainerOut{
+      display: flex; 
+      justify-content: end; 
+      padding-left: 15px;
+      font-size: 11px;
+      color: #616771; 
+
+    }
+
+    .pseudo{
+      display: inline-block; 
+    }
+
+    .msgOut{
+      display: inline-block; 
+    }
+
+    .msgContainerOut{
+      display: flex; 
+      justify-content: end; 
+      background-color: #006AFF;
+      color: white; 
+      margin-top: 6px;
+      padding: 10px; 
+      border-radius: 20px; 
+    }
+
+
+    #messages{
+      width: 86%; 
+      overflow-x: scroll;
+    }
+
+    #connected-name-container{
+      position: fixed;
+      right: 0; 
+      top: 0; 
+      width: 14%;
+      height: calc(100% - 3rem);
+      background-color: #333;
+      z-index: -3333;
+      color: white; 
+      font-family: sans-serif;
+    }
+
+    #connected-name-container > p {
+      font-size: 16px;
+      margin: 10px 0 10px 5px;
+    }
+
+    #connected-name-container > #connected-name p {
+      font-size: 20px;
+      margin: 10px 0 10px 5px;
+    }
+
+    #typing-indicator{
+      font-size: 17px;
+      background-color: #00BFA5;
+      color: white;
+    }
+
+    #typing-indicator{
+      position: fixed;
+      left: 0;
+      bottom: 3rem;
+      width: 86%;
+    }
+
+    </style>
+  </head>
+  <body>
+    
+    <div id="salonId" style="display: none;"><%= salonId %></div>
+    <div id="username" style="display: none;"><%= username %></div>
+    <form id="form" action="">
+      <input id="input" autocomplete="off" /><button>Send</button>
+      <button id="toggle-btn">Disconnect</button>   
+    </form>
+    <div id="messages">
+    </div>
+    <div id="connected-name-container">
+      <p>Users Connected</p>
+      <div id="connected-name">
+      
+      </div>
+    </div>
+    
+    <div id="typing-indicator"></div>
+    
+  </body>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+
+        const form = document.getElementById('form')
+        const input = document.getElementById('input')
+        const messages = document.getElementById('messages')
+        const toggleButton = document.getElementById('toggle-btn')
+        const salonId = document.getElementById("salonId").textContent.trim()
+        const username = document.getElementById("username").textContent.trim()
+        
+        const socket = io({
+            auth: {
+                serverOffset: 0, 
+                salonId: salonId, 
+                username: username
+            }
+        })
+        
+        form.addEventListener('submit', (e) => {
+            e.preventDefault()
+            if (input.value) {
+                socket.emit('chat message', input.value, salonId, username)
+                input.value = ''
+            }
+        })
+        
+        //ce qu'il se passe quand on clique sur le button connect ou disconnect
+        toggleButton.addEventListener('click', (e) => {
+            e.preventDefault()
+            if (socket.connected) {
+                toggleButton.innerText = 'Connect'
+                socket.disconnect()
+            } else {
+                toggleButton.innerText = 'Disconnect'
+                socket.connect()
+            }
+        })
+
+        //action d'envoyer un message
+        socket.on('chat message', (msg, serverOffset, username) => {
+            const item = renderMessage(msg, username); 
+            const messageElement = document.createElement('div');
+            messageElement.innerHTML = item;
+            messages.appendChild(messageElement)
+            window.scrollTo(0, document.body.scrollHeight)
+            socket.auth.serverOffset = serverOffset
+        })
+        
+        //action quand un utilisateur se connecte
+        socket.on('userConnect', (username) => {
+            const item = document.createElement('p')
+            item.textContent = username + " s'est connecté"
+            messages.appendChild(item)
+            window.scrollTo(0, document.body.scrollHeight)
+        })
+
+        //action quand un utilisateur se deconnecte
+        socket.on('userDisconnect', (username) => {
+            const item = document.createElement('p')
+            item.textContent = username + " s'est deconnecté"
+            messages.appendChild(item)
+            window.scrollTo(0, document.body.scrollHeight)
+        })
+
+        //permet de mettre a jour la liste des personne connecter
+        socket.on("updateUserConnectedList", (usersConnected) => {
+            // Mettre à jour la liste de tous les utilisateurs connectés
+            supprimerNom(null, usersConnected);
+            console.log(usersConnected)
+
+            // Afficher la liste des utilisateurs connectés
+            const connectedNameDiv = document.getElementById('connected-name');
+            connectedNameDiv.innerHTML = ''; // Efface le contenu précédent
+            usersConnected.forEach(name => {
+              const nameElement = document.createElement('p');
+              nameElement.textContent = name;
+              connectedNameDiv.appendChild(nameElement);
+            });
+          })
+
+        //function pour afficher le message avec la mise en forme
+        function renderMessage(messageText, username) {
+
+          if (username != socket.auth.username){
+            return `<div class="messageIn">
+                      <div class="imageContainer">
+                      <img class="pp" src="http://localhost:3000/assets/user.png">
+                      </div>
+                      <div class="textContainer">
+                        <div class="pseudoContainer">
+                          <p class="pseudo">${username}</p>
+                        </div>
+                        <div class="msgContainer">
+                          <p class="msg">${messageText}</p>
+                        </div>
+                      </div>
+                    </div>`
+          }else{
+            return `<div class="messageOut">
+                      <div class="imageContainerOut">
+                        <img class="pp" src="http://localhost:3000/assets/user.png">
+                      </div>
+                      <div class="textContainerOut ">
+                        <div class="pseudoContainerOut">
+                          <div><p class="pseudo">${username}</p></div>
+                        </div>
+                        <div class="msgContainerOut">
+                          <div>
+                          <p class="msgOut">${messageText}</p></div>
+                        </div>
+                      </div>
+                    </div>`
+          }
+        }
+
+        //function pour supprimer un nom d'une liste
+        function supprimerNom(nom, liste) {
+            let index = liste.indexOf(nom);
+            if (index !== -1) {
+              liste.splice(index, 1);
+            }
+          }
+
+
+        //partie qui gère l'affichage de user is typing
+        const typingIndicator = document.getElementById('typing-indicator');
+          let typingTimeout;
+
+          input.addEventListener('input', () => {
+            clearTimeout(typingTimeout);
+            socket.emit('typing', salonId, username);
+
+            typingTimeout = setTimeout(() => {
+              socket.emit('not typing', salonId);
+            }, 2000);
+          });
+
+          socket.on('user typing', (userId, username) => {
+            //const pseudo = "User";  // Replace with the actual username
+            typingIndicator.textContent = "" + username + " is typing...";//${pseudo}
+            window.scrollTo(0, document.body.scrollHeight)
+          });
+
+          socket.on('user not typing', () => {
+            typingIndicator.textContent = '';
+          });
+    </script>
+</html>

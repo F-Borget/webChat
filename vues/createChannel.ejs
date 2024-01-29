@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<!--onglet permettant la creation d'un nouveau channel-->
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Travaille Flavien & Romuald</title>
+    <style>
+        * {
+            margin-top: 20px;
+        }
+
+        #search {
+            display: block;
+            font-size: 16px;
+            border: 1px solid rgb(200, 200, 200);
+            border-radius: 5px;
+            padding: 12px 15px;
+        }
+
+        #newChannel {
+            font-size: 15px;
+            color: white;
+            font-family: Arial, Helvetica, sans-serif;
+            padding: 15px 30px;
+            background-color: rgb(46, 164, 79);
+            border-style: none;
+            border-radius: 7px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        #newChannel:hover {
+            box-shadow: 0px 6px 10px 1px rgba(0, 0, 0, 0.2);
+        }
+
+        .custom-text-field {
+            display: block;
+            width: 300px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            outline: none;
+            font-size: 16px;
+        }
+
+        .custom-text-field:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+        }
+    </style>
+</head>
+
+<body>
+    <form id="myForm" action="/newChannel" method="post" enctype="multipart/form-data">
+        <input id="search" type="text" name="nomSalon" placeholder="Channel's name" required />
+        <input type="text" class="custom-text-field" name="descriptionSalon" placeholder="Description de votre salon" required>
+        <button id="newChannel">Create Channel</button>
+    </form>
+
+</body>
+
+</html>

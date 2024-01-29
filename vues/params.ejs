@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <!--onglet à l'ouverture de la page permettant de choisir le nom d'utilisateur et le salon à rejoindre-->
+  <head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Travaille Flavien & Romuald</title>
+    <style>
+
+        *{
+            margin-top: 20px;
+        }
+
+        #search{
+            display: block; 
+            font-size: 16px; 
+            border: 1px solid rgb(200, 200, 200);
+            border-radius: 5px; 
+            padding: 12px 15px; 
+        }
+
+        #select-item{
+            display: inline-block;
+            font-size: 16px; 
+            border: 1px solid rgb(200, 200, 200);
+            border-radius: 5px; 
+            padding: 12px 15px; 
+        }
+
+        #newChannel{
+            font-size: 15px; 
+            color: white; 
+            font-family: Arial, Helvetica, sans-serif;
+            padding: 15px 30px; 
+            background-color: rgb(46, 164, 79);
+            border-style: none; 
+            border-radius: 7px;
+            font-weight: 700; 
+            cursor: pointer; 
+            text-decoration: none;
+        }
+
+        #newChannel:hover{
+            box-shadow: 0px 6px 10px 1px rgba(0, 0, 0, 0.2);
+        }
+
+        #imageUpload{
+            display: block; 
+            font-size: 16px; 
+            border: 1px solid rgb(200, 200, 200);
+            border-radius: 5px; 
+            padding: 12px 15px;
+        }
+
+        #joinConv{
+            display: block;
+            font-size: 20px; 
+            padding: 10px 20px; 
+            border-style: none; 
+            border-radius: 5px; 
+            color: white; 
+            background-color: rgb(55, 156, 252);  
+            cursor: pointer; 
+        }
+
+        #joinConv:hover{
+            box-shadow: 0px 6px 10px 1px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+  </head>
+  <body>
+    <form id="myForm" action="/createUser" method="post" enctype="multipart/form-data">
+        <input id="search" type="text" name="username" placeholder="Username" required/>
+        <select id="select-item" name="channel" required>
+            <% for (const salon of salons) { %>
+                <option><%= salon.nom %></option>
+            <% } %>
+        </select>
+        <a href="/newChannel" id="newChannel">New Channel</a>
+        <button  id="joinConv">Join</button> 
+    </form>
+    
+  </body>
+</html>
